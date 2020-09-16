@@ -1,0 +1,27 @@
+{"message":"aditi","level":"info","service":"user-service"}
+{"message":"aditi","level":"info","service":"user-service"}
+{"message":"aditi","level":"info","service":"user-service"}
+{"message":"CONNECTED","level":"info","service":"user-service"}
+{"message":"aditi","level":"info","service":"user-service"}
+{"message":"CONNECTED","level":"info","service":"user-service"}
+{"message":"CONNECTED","level":"info","service":"user-service"}
+{"message":"CONNECTED","level":"info","service":"user-service"}
+{"service":"user-service","name":"SequelizeAccessDeniedError","parent":{"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'root'@'localhost' (using password: NO)"},"original":{"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'root'@'localhost' (using password: NO)"},"level":"error","message":"Error: Access denied for user 'root'@'localhost' (using password: NO)","stack":"SequelizeAccessDeniedError: Access denied for user 'root'@'localhost' (using password: NO)\n    at ConnectionManager.connect (/home/aditi/Documents/Devsnest/E-commerce/node_modules/sequelize/lib/dialects/mysql/connection-manager.js:118:17)\n    at process._tickCallback (internal/process/next_tick.js:68:7)"}
+{"service":"user-service","name":"SequelizeAccessDeniedError","parent":{"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'root'@'localhost' (using password: NO)"},"original":{"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'root'@'localhost' (using password: NO)"},"level":"error","message":"Error: Access denied for user 'root'@'localhost' (using password: NO)","stack":"SequelizeAccessDeniedError: Access denied for user 'root'@'localhost' (using password: NO)\n    at ConnectionManager.connect (/home/aditi/Documents/Devsnest/E-commerce/node_modules/sequelize/lib/dialects/mysql/connection-manager.js:118:17)\n    at process._tickCallback (internal/process/next_tick.js:68:7)"}
+{"service":"user-service","name":"SequelizeAccessDeniedError","parent":{"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'root'@'localhost' (using password: NO)"},"original":{"code":"ER_ACCESS_DENIED_ERROR","errno":1045,"sqlState":"28000","sqlMessage":"Access denied for user 'root'@'localhost' (using password: NO)"},"level":"error","message":"Error: Access denied for user 'root'@'localhost' (using password: NO)","stack":"SequelizeAccessDeniedError: Access denied for user 'root'@'localhost' (using password: NO)\n    at ConnectionManager.connect (/home/aditi/Documents/Devsnest/E-commerce/node_modules/sequelize/lib/dialects/mysql/connection-manager.js:118:17)\n    at process._tickCallback (internal/process/next_tick.js:68:7)"}
+{"message":"CONNECTED","level":"info","service":"user-service"}
+{"message":"CONNECTED","level":"info","service":"user-service"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T11:07:19.780Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T11:07:25.138Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T11:11:52.996Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T11:11:56.745Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T11:47:21.371Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:13:23.575Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:14:04.068Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:14:38.947Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:15:21.109Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:15:54.517Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:24:47.939Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:29:30.059Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:31:10.085Z"}
+{"message":"CONNECTED","level":"info","service":"user-service","timestamp":"2020-09-15T21:34:49.967Z"}
