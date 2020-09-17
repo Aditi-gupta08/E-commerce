@@ -59,10 +59,7 @@ const verifyToken = (req, res, next) => {
 
 const passwordHash = async (password) => {
     const saltRounds = 10;
-    console.log("Aa");
-    console.log(password);
     const [err, encrypted_pass ] = await to( bcrypt.hash(password, saltRounds));
-    console.log(encrypted_pass);
 
     if(err)
         //console.log(err);
@@ -103,6 +100,19 @@ const vldt_c_address = joi.object().keys({
 });
 
 
+const vldt_update_info = joi.object().keys({
+    name: joi.string(),
+    phone_no: joi.number().integer().min(1000000000).max(9999999999),
+    credit_card_no: joi.number().positive(),
+    addr1: joi.string(),
+    addr2: joi.string(),
+    city: joi.string(),
+    region: joi.string(),
+    postal_code: joi.number().positive(),
+    country: joi.string()
+});
+
+
 //Categories validation
 const vldt_add_category = joi.object().keys({
     name: joi.string().required(),
@@ -124,14 +134,21 @@ const vldt_add_review = joi.object().keys({
 });
 
 // Order validation
-const vldt_add_order = joi.object().keys({
+const vldt_add_to_cart = joi.object().keys({
     product_id: joi.number().required(),
     quantity: joi.number().required()
 });
 
+const vldt_update_cart = joi.object().keys({
+    quantity: joi.number().required()
+});
+
+
+const admin_id = 1;
 
 // --------------------------------------------------------Exports---------------------------------------------------------------
 module.exports = {
+    admin_id,
     verifyToken,
     passwordHash,
     vldt_signup,
@@ -139,8 +156,10 @@ module.exports = {
     vldt_c_phone_no,
     vldt_c_credit_no,
     vldt_c_address,
+    vldt_update_info,
     vldt_add_category,
     vldt_add_products,
     vldt_add_review,
-    vldt_add_order
+    vldt_add_to_cart,
+    vldt_update_cart
 }

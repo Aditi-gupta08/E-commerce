@@ -42,9 +42,9 @@ router.post('/', utils.verifyToken, async(req, res) => {
         'unit_cost': PRODUCT.discounted_price,
         'subtotal': (ordr.quantity)*(PRODUCT.discounted_price)
     }
-    
 
-    // find course or create new one
+
+    // find or create new one
     const newOrder = models.orderModel.build( order );
 
     await newOrder.save();

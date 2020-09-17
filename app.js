@@ -11,7 +11,7 @@ const customerRouter = require('./routes/customers');
 const categoryRouter = require('./routes/categories');
 const productRouter = require('./routes/products');
 const orderRouter = require('./routes/orders');
-//var usersRouter = require('./routes/users');
+const shoppingCartRouter = require('./routes/shopping_cart');
 
 const alert = require('./lib/alerting/sentry');
 /* const logger = require('./lib/logging/logfly_logger');
@@ -78,6 +78,7 @@ connect();
 app.use('/customers', customerRouter);
 app.use('/categories', categoryRouter);
 app.use('/products', productRouter);
-app.use('/orders', orderRouter);
+/* app.use('/orders', orderRouter); */
+app.use('/shoppingcart', shoppingCartRouter);
 
 module.exports = app;

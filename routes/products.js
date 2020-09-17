@@ -23,10 +23,15 @@ router.get('/', async(req, res) => {
 
 
 // Add product    (only admins can add)
-router.post('/:category_id', async(req, res) => {
+router.post('/:category_id', utils.verifyToken, async(req, res) => {
     
     let prod = req.body;
     let cat_id = req.params.category_id;
+
+    if( cust.id != utils.admin_id)
+    {
+        return res.json({ data: null, error: "Only admins can add a category !!"});
+    }
 
     // Validation
     let validated = await utils.vldt_add_products.validate(prod);

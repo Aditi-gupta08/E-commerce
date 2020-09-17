@@ -62,19 +62,19 @@ router.post('/', async(req, res) => {
 
 
 
-/* 
 
 // Update a customer
 router.put('/', utils.verifyToken, async(req, res) => {
 
     // Validation 
-    let validated = await utils.vldt_login.validate(req.body);
+    let validated = await utils.vldt_update_info.validate(req.body);
 
     if(validated && validated.error)
     {
         return res.json({ data: null, error: validated["error"].message });
     }
 
+    
     let customer = res.cur_customer;
     let { name, phone_no, credit_card_no, addr1, addr2, city, region, postal_code, country} = req.body;
 
@@ -97,8 +97,10 @@ router.put('/', utils.verifyToken, async(req, res) => {
         }
     ));
 
+    return res.json({ data: "Info updated successfully!!"});
+
 });
- */
+
 
 
 
