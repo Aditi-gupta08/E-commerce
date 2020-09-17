@@ -1,10 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
 const {to} = require('await-to-js');
-/* var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
- */
 const models = require('./lib/database/mysql/index');
 
 const customerRouter = require('./routes/customers');
@@ -26,27 +22,11 @@ var app = express();
 alert();
 
 
-
-// view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'ejs');
-
-//app.use(logger('dev'));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-/* app.use(accessLoggerMW) */
-//app.use(cookieParser());
-//app.use(express.static(path.join(__dirname, 'public')));
 
 
-//app.use('/users', usersRouter);
-
-/* // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
+/*
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -70,9 +50,6 @@ let connect = async() => {
 
 
 connect();
-
-
-/* console.log(aditi); */
 
 // Routes
 app.use('/customers', customerRouter);
