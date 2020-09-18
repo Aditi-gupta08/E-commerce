@@ -55,7 +55,7 @@ connect();
 app.use('/customers', customerRouter);
 app.use('/categories', categoryRouter);
 app.use('/products', productRouter);
-/* app.use('/orders', orderRouter); */
+app.use('/orders', orderRouter);
 app.use('/shoppingcart', shoppingCartRouter);
 
 module.exports = app;

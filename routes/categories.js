@@ -96,6 +96,3 @@ module.exports = router;
 
 
 
-
-//  joi validations
-//  only admin is allowed to add

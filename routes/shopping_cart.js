@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const models = require('../lib/database/mysql/index');
-const { to } = require('await-to-js');
-const utils = require('../data/utils');
 const Sequelize = require('sequelize');
+const { to } = require('await-to-js');
+
+
+const models = require('../lib/database/mysql/index');
+const utils = require('../data/utils');
+const cart_services = require('../services/shopping_cart');
+const logger = require('../lib/logging/winston_logger');
 
 
 
@@ -30,6 +34,19 @@ router.get('/', utils.verifyToken, async(req, res) => {
     
     return res.send({ data: PRODUCTS, error: null});
 
+});
+
+
+
+// GET - Total amount of products in cart
+router.get('/totalAmount', utils.verifyToken, async(req, res) => {
+    let cust = res.cur_customer;
+    let [err, tot_amt] = await to(cart_services.total_amount( cust.id ));
+
+    if(err)
+        return res.json({data: null, error: err});
+    
+    return res.send({ data: `Total amount: ${tot_amt}`, error: null});
 });
 
 

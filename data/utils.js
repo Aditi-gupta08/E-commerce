@@ -133,8 +133,15 @@ const vldt_add_review = joi.object().keys({
     review: joi.string().required()
 });
 
-// Order validation
+// Shoppping cart
 const vldt_add_to_cart = joi.object().keys({
+    product_id: joi.number().required(),
+    quantity: joi.number().required()
+});
+
+
+// Order validation
+const vldt_add_order_from_prod = joi.object().keys({
     product_id: joi.number().required(),
     quantity: joi.number().required()
 });
@@ -161,5 +168,6 @@ module.exports = {
     vldt_add_products,
     vldt_add_review,
     vldt_add_to_cart,
+    vldt_add_order_from_prod,
     vldt_update_cart
 }
