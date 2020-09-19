@@ -7,6 +7,7 @@ const { to } = require('await-to-js');
 const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
 const cart_services = require('../services/shopping_cart');
+const product_services = require('../services/products');
 const logger = require('../lib/logging/winston_logger');
 
 
@@ -56,6 +57,7 @@ router.post('/add', utils.verifyToken, async(req, res) => {
     
     let cart_product = req.body;
     let cust = res.cur_customer;
+    let prod_id = cart_product.product_id;
 
     // Validation
     let validated = await utils.vldt_add_to_cart.validate(cart_product);
@@ -67,13 +69,7 @@ router.post('/add', utils.verifyToken, async(req, res) => {
 
     
     // Checking the product exist or not
-    let [err, PRODUCT ] = await to(models.productModel.findOne(
-        {   attributes: {exclude: ['createdAt', 'updatedAt']},
-            where: {
-                id: cart_product.product_id
-            }
-        }
-    ));
+    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
@@ -154,13 +150,7 @@ router.put('/update/:product_id', utils.verifyToken, async(req, res) => {
 
     
     // Checking the product exist or not
-    let [err, PRODUCT ] = await to(models.productModel.findOne(
-        {   attributes: {exclude: ['createdAt', 'updatedAt']},
-            where: {
-                id: prod_id
-            }
-        }
-    ));
+    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
@@ -216,13 +206,12 @@ router.delete('/empty', utils.verifyToken, async(req, res) => {
     
     let cust = res.cur_customer;
 
-    let [err, deleted] = await to( models.cartModel.destroy({
-        where: {
-            customer_id: cust.id
-        }
-    }));
+    let [err, isDeleted] = await to(cart_services.emptyCart(cust.id));
 
-    if( deleted == 0 )
+    if(err)
+        return res.json({data: null, error: err});
+
+    if( !isDeleted )
       return res.json({data: null, error: "Cart was already empty !!"});
 
     return res.json({ data: 'Cart is successfully emptied!!'});
@@ -236,14 +225,12 @@ router.delete('/removeProduct/:product_id', utils.verifyToken, async(req, res) =
     let cust = res.cur_customer;
     let prod_id = req.params.product_id;
 
-    let [err, deleted] = await to( models.cartModel.destroy({
-        where: {
-            customer_id: cust.id,
-            product_id: prod_id
-        }
-    }));
+    let [err, isDeleted] = await to(cart_services.remove_product_from_cart(cust.id, prod_id));
 
-    if( deleted == 0 )
+    if(err)
+        return res.json({data: null, error: err});
+
+    if( !isDeleted )
       return res.json({data: null, error: "This product wasn't in the cart !!"});
 
     return res.json({ data: 'Product is successfully removed from the cart !!'});

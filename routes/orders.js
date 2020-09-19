@@ -8,6 +8,7 @@ const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
 const logger = require('../lib/logging/winston_logger');
 const cart_services = require('../services/shopping_cart');
+const product_services = require('../services/products');
 
 
 // Buy from cart
@@ -89,6 +90,7 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
     
     let ordr = req.body;
     let cust = res.cur_customer;
+    let prod_id = ordr.product_id;
 
     // Validation
     let validated = await utils.vldt_add_order_from_prod.validate(ordr);
@@ -98,13 +100,8 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
         return res.json({ data: null, error: validated["error"].message });
     } 
 
-    let [err, PRODUCT] = await to(models.productModel.findOne(
-        {   attributes: {exclude: ['createdAt', 'updatedAt']},
-            where: {
-            id: ordr.product_id
-            }
-        }
-    ));
+
+    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});

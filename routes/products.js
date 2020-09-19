@@ -5,7 +5,7 @@ const { to } = require('await-to-js');
 const utils = require('../data/utils');
 const Sequelize = require('sequelize');
 const { reviewModel } = require('../lib/database/mysql/index');
-
+const product_services = require('../services/products');
 
 // Get all products
 router.get('/', async(req, res) => {
@@ -58,13 +58,7 @@ router.post('/:category_id', utils.verifyToken, async(req, res) => {
 router.get('/:product_id', async(req, res) => {
     let prod_id = req.params.product_id;
 
-    let [err, PRODUCT] = await to(models.productModel.findOne(
-        {   attributes: {exclude: ['createdAt', 'updatedAt']},
-            where: {
-            id: prod_id
-            }
-        }
-    ));
+    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
