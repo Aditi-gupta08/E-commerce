@@ -15,8 +15,24 @@ const product_services = require('../services/products');
 router.post('/from_Cart', utils.verifyToken, async(req, res) => {
     let cust = res.cur_customer;
 
-    // Extracting products from cart
-    let [err, CART] = await to(models.cartModel.findAll(
+    let [err, CUSTOMER] = await to(models.customerModel.findOne({
+        where: { id: cust.id}
+    }));
+
+    if(CUSTOMER.dataValues.addr1 == null)
+        return res.json({ data: null, error: "Please update your addresss details before placing the order !!"});
+
+    if(CUSTOMER.dataValues.phone_no == null)
+        return res.json({ data: null, error: "Please update your phone no before placing the order !!"});
+
+    if(CUSTOMER.dataValues.credit_card_no == null)
+        return res.json({ data: null, error: "Please update your credit card number before placing the order !!"});
+
+
+
+    // Extracting products from 
+    let CART;
+    [err, CART] = await to(models.cartModel.findAll(
         {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id', 'id']},
             where: {
                 customer_id: cust.id
@@ -44,7 +60,8 @@ router.post('/from_Cart', utils.verifyToken, async(req, res) => {
     // Adding to orders table
     let order_info = {
         'customer_id': cust.id,
-        'subtotal': tot_amt
+        'subtotal': tot_amt,
+        'paymentDone': true
     }
 
     let newOrder;
@@ -59,7 +76,6 @@ router.post('/from_Cart', utils.verifyToken, async(req, res) => {
     let order_products_data = [];
 
     
- 
     CART.forEach( (prod) => {
         tmp = prod.dataValues;
         tmp["order_id"] = order_id;
@@ -92,6 +108,21 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
     let cust = res.cur_customer;
     let prod_id = ordr.product_id;
 
+    let [err, CUSTOMER] = await to(models.customerModel.findOne({
+        where: { id: cust.id}
+    }));
+
+    if(CUSTOMER.dataValues.addr1 == null)
+        return res.json({ data: null, error: "Please update your addresss details before placing the order !!"});
+
+    if(CUSTOMER.dataValues.phone_no == null)
+        return res.json({ data: null, error: "Please update your phone no before placing the order !!"});
+
+    if(CUSTOMER.dataValues.credit_card_no == null)
+        return res.json({ data: null, error: "Please update your credit card no before placing the order !!"});
+
+
+
     // Validation
     let validated = await utils.vldt_add_order_from_prod.validate(ordr);
 
@@ -100,8 +131,8 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
         return res.json({ data: null, error: validated["error"].message });
     } 
 
-
-    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
+    let PRODUCT;
+    [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
@@ -109,10 +140,15 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
     if( PRODUCT == null)
         return res.json({ data: null, error: "No product found with this id !"});
 
+    /* let today = new Date();
+
+    today.setDate(today.getDate() + 2);
+    logger.info(today.toLocaleDateString()); */
     
     let order_info = {
         'customer_id': cust.id,
-        'subtotal': (ordr.quantity)*(PRODUCT.discounted_price)
+        'subtotal': (ordr.quantity)*(PRODUCT.discounted_price),
+        'paymentDone': true
     }
 
     // create order 
@@ -160,6 +196,7 @@ router.get('/inCustomer', utils.verifyToken, async(req, res) => {
             }]
         }
     ));
+    
 
     if(err)
         return res.json({data: null, error: err});
@@ -190,6 +227,7 @@ router.get('/:order_id', async(req, res) => {
 
     if(err)
         return res.json({data: null, error: err});
+
 
     if( ORDER == null)
         return res.json({ data: null, error: "No order found with this id !"});

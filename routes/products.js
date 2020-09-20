@@ -152,10 +152,28 @@ router.get('/:product_id/reviews', async(req, res) => {
 
 
 // Add reviews for a product
-router.post('/:product_id/reviews', async(req, res) => {
+router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     
+    let cust = res.cur_customer;
     let rev = req.body;
     let prod_id = req.params.product_id;
+
+    let [err, ORDERS] = await to(models.orderModel.findAll(
+        {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id']},
+            where: {
+            customer_id: cust.id
+            },
+            include: [{   model: models.ordersProductModel,
+                where: {
+                    product_id: prod_id
+                },
+                attributes: {exclude: ['createdAt', 'updatedAt', 'order_id', 'id']}
+            }]
+        }
+    ));
+
+    if( ORDERS.length == 0)
+        return res.json({ data: null, error: "You are no allowed to give review for this product!! As you haven't bought it yet !"});
 
     // Validation
     let validated = await utils.vldt_add_review.validate(rev);
