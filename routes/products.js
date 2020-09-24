@@ -1,23 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const models = require('../lib/database/mysql/index');
 const { to } = require('await-to-js');
+
+const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
-const Sequelize = require('sequelize');
-const { reviewModel } = require('../lib/database/mysql/index');
 const product_services = require('../services/products');
+const cache = require('../lib/cache/redis');
+
 
 // Get all products
 router.get('/', async(req, res) => {
 
-    let [err, PRODUCTS] = await to(models.productModel.findAll({
-        attributes: {exclude: ['createdAt', 'updatedAt']}
-      }));
+    let [err, serv] = await to(product_services.get_all_prodiucts());
 
     if(err)
-        return res.json({ data: null, error: err});
+        return res.json({data: null, error: err});
+    let [error, PRODUCTS] = serv;
 
-    return res.send({ data: PRODUCTS, error: null});
+    if(error)
+        return res.json({data: null, error });
+    
+    return res.send({ data: PRODUCTS, error});
 });
 
 
@@ -27,6 +30,7 @@ router.post('/:category_id', utils.verifyToken, async(req, res) => {
     
     let prod = req.body;
     let cat_id = req.params.category_id;
+    let cust = res.cur_customer;
 
     if( cust.id != utils.admin_id)
     {
@@ -58,16 +62,17 @@ router.post('/:category_id', utils.verifyToken, async(req, res) => {
 router.get('/:product_id', async(req, res) => {
     let prod_id = req.params.product_id;
 
-    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
+    let [err, serv] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
+    let [error, data] = serv;
 
-    if( PRODUCT == null)
-        return res.json({ data: null, error: "No product found with this id !"});
+    if(error)
+        return res.json({data: null, error });
     
-    return res.send({ data: PRODUCT, error: null});
-
+    return res.send({ data, error});
+    
 });
 
 
@@ -117,8 +122,6 @@ router.get('/inCategory/:category_id', async(req, res) => {
             }
         }
     ));
-
-    console.log(Products);
 
     if(err)
         return res.json({ data: null, error: err});

@@ -23,11 +23,13 @@
     "my-logger": "^1.0.1",
     "mysql2": "^2.1.0",
     "nodemon": "^2.0.4",
+    "redis": "^3.0.2",
     "sequelize": "^6.3.5",
     "winston": "^3.3.3"
   },
   "main": "app.js",
   "devDependencies": {
+    "@types/redis": "^2.8.27",
     "@types/sequelize": "github:types/sequelize"
   },
   "author": "",

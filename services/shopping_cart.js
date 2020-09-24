@@ -5,7 +5,8 @@ const models = require('../lib/database/mysql/index');
 const logger = require('../lib/logging/winston_logger');
 
 
-async function total_amount( cust_id ) {
+async function get_prod_from_cart( cust_id ) {
+
     let [err, PRODUCTS] = await to(models.cartModel.findAll(
         {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id', 'id']},
             where: {
@@ -13,17 +14,33 @@ async function total_amount( cust_id ) {
             }
         }
     ));
+    let error;
+    if(err)
+        error = err;
+    else if(PRODUCTS.length == 0)
+        error = "Cart is empty !!";
+
+    return [error, PRODUCTS];
+}
+
+
+async function total_amount( cust_id ) {
+    let [err, serv] = await to(get_prod_from_cart( cust_id ));
 
     if(err)
-        return res.json({data: null, error: err});
+        return [err, null];
+
+    let [error, PRODUCTS] = serv;
+    if(error)
+        return [error, null];
+    
 
     let tot = 0;
-    
     PRODUCTS.forEach( elem => {
         tot += elem.dataValues.subtotal;
     });
 
-    return tot;
+    return [null, tot];
 }
 
 
@@ -58,6 +75,7 @@ async function emptyCart( cust_id ) {
 
 // --------------------------------------------------------Exports---------------------------------------------------------------
 module.exports = {
+    get_prod_from_cart,
     total_amount,
    remove_product_from_cart,
    emptyCart

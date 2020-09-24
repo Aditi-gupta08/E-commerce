@@ -77,18 +77,22 @@ const vldt_signup = joi.object().keys({
     password: joi.string().min(3).max(10).required()
 });
 
+
 const vldt_login = joi.object().keys({
     email: joi.string().email().required(),
     password: joi.string().min(3).max(10).required()
 });
 
+
 const vldt_c_phone_no = joi.object().keys({
     phone_no: joi.number().integer().min(1000000000).max(9999999999).required() 
 });
 
+
 const vldt_c_credit_no = joi.object().keys({
     credit_card_no: joi.number().positive().required()
 });
+
 
 const vldt_c_address = joi.object().keys({
     addr1: joi.string().required(),

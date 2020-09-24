@@ -16,24 +16,15 @@ const logger = require('../lib/logging/winston_logger');
 router.get('/', utils.verifyToken, async(req, res) => {
     let cust = res.cur_customer;
 
-    let [err, PRODUCTS] = await to(models.cartModel.findAll(
-        {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id', 'id']},
-            where: {
-                customer_id: cust.id
-            }
-        }
-    ));
+    let [error, serv] = await to(cart_services.get_prod_from_cart( cust.id ));
 
-    console.log(PRODUCTS);
+    if(error)
+        res.json({ data: null, error: error});
 
-    if(err)
-        return res.json({data: null, error: err});
-
-    // Check if cart is empty or not
-    if( PRODUCTS.length==0)
-        return res.json({ data: null, error: "Cart is empty !!"});
+    if(serv[0])
+        res.json({ data: null, error: serv[0]});
     
-    return res.send({ data: PRODUCTS, error: null});
+    return res.send({ data: serv[1], error: null});
 
 });
 
@@ -42,12 +33,15 @@ router.get('/', utils.verifyToken, async(req, res) => {
 // GET - Total amount of products in cart
 router.get('/totalAmount', utils.verifyToken, async(req, res) => {
     let cust = res.cur_customer;
-    let [err, tot_amt] = await to(cart_services.total_amount( cust.id ));
+    let [err, serv] = await to(cart_services.total_amount( cust.id ));
 
     if(err)
         return res.json({data: null, error: err});
+
+    if(serv[0])
+        return res.json({ data: null, error: serv[0] });
     
-    return res.send({ data: `Total amount: ${tot_amt}`, error: null});
+    return res.send({ data: `Total amount: ${serv[1]}`, error: null});
 });
 
 
@@ -69,13 +63,15 @@ router.post('/add', utils.verifyToken, async(req, res) => {
 
     
     // Checking the product exist or not
-    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
+    let [err, serv] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
 
-    if( PRODUCT == null)
-        return res.json({ data: null, error: "No product exists with this id !"});
+    let [error, PRODUCT] = serv;
+
+    if(error)
+        res.json({ data: null, error})
 
 
     // Checking if the user has already added th eproduct to cart or not- if yes, add the quantity to that entry
@@ -150,14 +146,15 @@ router.put('/update/:product_id', utils.verifyToken, async(req, res) => {
 
     
     // Checking the product exist or not
-    let [err, PRODUCT] = await to(product_services.get_prod_by_id(prod_id) );
+    let [err, serv] = await to(product_services.get_prod_by_id(prod_id) );
 
     if(err)
         return res.json({data: null, error: err});
+    
+    let [error, PRODUCT] = serv;
 
-    if( PRODUCT == null)
-        return res.json({ data: null, error: "No product exists with this id !"});
-
+    if(error)
+        res.json({ data: null, error})
 
     // Checking if the user has already added the product to cart or not- if yes, add the quantity to that entry
     let CART_ENTRY;
