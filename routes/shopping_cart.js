@@ -1,7 +1,7 @@
 const express = require('express');
-const router = express.Router();
 const Sequelize = require('sequelize');
 const { to } = require('await-to-js');
+const router = express.Router();
 
 
 const models = require('../lib/database/mysql/index');

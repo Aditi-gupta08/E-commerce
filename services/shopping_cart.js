@@ -1,10 +1,12 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var {to} = require('await-to-js');
+
 const models = require('../lib/database/mysql/index');
 const logger = require('../lib/logging/winston_logger');
 
 
+//------------------------------------------------------- FUNCTIONS ----------------------------------------------------------
 async function get_prod_from_cart( cust_id ) {
 
     let [err, PRODUCTS] = await to(models.cartModel.findAll(
@@ -14,6 +16,7 @@ async function get_prod_from_cart( cust_id ) {
             }
         }
     ));
+    
     let error;
     if(err)
         error = err;

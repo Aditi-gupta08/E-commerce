@@ -1,17 +1,40 @@
 const express = require('express');
-const router = express.Router();
 const { to } = require('await-to-js');
+const router = express.Router();
 
 const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
 const product_services = require('../services/products');
 const cache = require('../lib/cache/redis');
+const middlwr_caching = require('../data/middlewares/caching_functions');
+
+
+// Get all products using caching
+router.get('/all', middlwr_caching.caching_all_prod ,async(req, res) => {
+    let [err, serv] = await to(product_services.get_all_products());
+
+    if(err)
+        return res.json({data: null, error: err});
+    let [error, PRODUCTS] = serv;
+
+    if(error)
+        return res.json({data: null, error });
+
+    let PROD = JSON.stringify( PRODUCTS, null, 0);
+
+    let data;
+    [err, data] = await to(cache.setValue("All_Products", PROD));
+    if(err)
+        return res.json({ data: null, error: "Eror in setting value in Redis !!"});
+    
+    return res.send({ data: PRODUCTS, error});
+});
 
 
 // Get all products
 router.get('/', async(req, res) => {
 
-    let [err, serv] = await to(product_services.get_all_prodiucts());
+    let [err, serv] = await to(product_services.get_all_products());
 
     if(err)
         return res.json({data: null, error: err});
@@ -99,10 +122,7 @@ router.get('/search', async(req, res) => {
     if( PRODUCTS.length == 0 )
         return res.json({ data: null, error: "No product found with this name !"});
 
-    
-    
     return res.send({ data: PRODUCTS, error: null});
-
 });
 
 
@@ -112,46 +132,39 @@ router.get('/inCategory/:category_id', async(req, res) => {
 
     let cat_id = req.params.category_id;
 
-    let [err, Products] = await to(models.productModel.findAll(
-        {   
-            where: {
-                category_id: cat_id
-            },
-            attributes: {
-                exclude: ['createdAt', 'updatedAt', 'category_id']
-            }
-        }
-    ));
-
+    let [err, serv] = await to(product_services.get_prods_in_cat_id(cat_id) );
     if(err)
-        return res.json({ data: null, error: err});
+        return res.json({data: null, error: err});
 
-    if( Products.length==0)
-        return res.json({ data:null, error: 'No product available in this category !'});
 
-    return res.json({ data:Products, error: null});
+    let [error, PRODUCTS] = serv;
+    if(error)
+        return res.json({data: null, error });
+
+    return res.json({ data:PRODUCTS, error: null});
 });
 
+/********** must add invalid cat_id err  **********/
 
 
 // Get all reviews of a product
 router.get('/:product_id/reviews', async(req, res) => {
 
     let prod_id = req.params.product_id;
-    let [err, REVIEWS] = await to(models.reviewModel.findAll({
-        attributes: {exclude: ['createdAt', 'updatedAt']},
-        where: { product_id: prod_id}
-      }));
-
+    let [err, serv] = await to(product_services.get_reviews_of_prod_by_id( prod_id ) );
     if(err)
-        return res.json({ data: null, error: err});
+        return res.json({data: null, error: err});
 
-    if( REVIEWS.length == 0)
-        return res.json({ data:null, error: 'No reviews found for this product!'});
+    let [error, REVIEWS] = serv;
+    if(error)
+        return res.json({data: null, error });
 
     return res.send({ data: REVIEWS, error: null});
 
 });
+
+
+/********** must add invalid prod_id err  **********/
 
 
 // Add reviews for a product
@@ -161,7 +174,7 @@ router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     let rev = req.body;
     let prod_id = req.params.product_id;
 
-    let [err, ORDERS] = await to(models.orderModel.findAll(
+    /* let [err, ORDERS] = await to(models.orderModel.findAll(
         {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id']},
             where: {
             customer_id: cust.id
@@ -176,7 +189,7 @@ router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     ));
 
     if( ORDERS.length == 0)
-        return res.json({ data: null, error: "You are no allowed to give review for this product!! As you haven't bought it yet !"});
+        return res.json({ data: null, error: "You are no allowed to give review for this product!! As you haven't bought it yet !"}); */
 
     // Validation
     let validated = await utils.vldt_add_review.validate(rev);

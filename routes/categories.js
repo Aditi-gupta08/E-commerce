@@ -1,12 +1,16 @@
 const express = require('express');
-const router = express.Router();
-const models = require('../lib/database/mysql/index');
 const { to } = require('await-to-js');
+
+const router = express.Router();
+
+const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
+const cache = require('../lib/cache/redis');
+const middlwr_caching = require('../data/middlewares/caching_functions');
 
 
 // Get all categories
-router.get('/', async(req, res) => {
+router.get('/', middlwr_caching.caching_all_catg, async(req, res) => {
 
     let [err, CATEGORIES] = await to(models.categoryModel.findAll({
         attributes: {exclude: ['createdAt', 'updatedAt']}
@@ -14,6 +18,13 @@ router.get('/', async(req, res) => {
 
     if(err)
         return res.json({ data: null, error: err});
+
+    let CATG = JSON.stringify( CATEGORIES, null, 0);
+
+    let data;
+    [err, data] = await to(cache.setValue("All_Categories", CATG));
+    if(err)
+        return res.json({ data: null, error: "Eror in setting value in Redis !!"});
 
     return res.send({ data: CATEGORIES, error: null});
 });

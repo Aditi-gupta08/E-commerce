@@ -1,11 +1,12 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var {to} = require('await-to-js');
+
 const models = require('../lib/database/mysql/index');
 const logger = require('../lib/logging/winston_logger');
 
 
-async function get_all_prodiucts()
+async function get_all_products()
 {
     let [err, PRODUCTS] = await to(models.productModel.findAll({
         attributes: {exclude: ['createdAt', 'updatedAt']}
@@ -43,10 +44,51 @@ async function get_prod_by_id( prod_id)
 }
 
 
+async function get_prods_in_cat_id( cat_id)
+{
+    let [err, Products] = await to(models.productModel.findAll(
+        {   
+            where: {
+                category_id: cat_id
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'category_id']
+            }
+        }
+    ));
+    let error;
+
+    if(err)
+        error = err;
+
+    if( Products.length==0)
+        error= "No product available in this category !!";
+    
+    return [error, Products];
+}
+
+
+async function get_reviews_of_prod_by_id (prod_id)
+{
+    let [err, REVIEWS] = await to(models.reviewModel.findAll({
+        attributes: {exclude: ['createdAt', 'updatedAt']},
+        where: { product_id: prod_id}
+      }));
+
+    if(err)
+        return [err, null];
+
+    if( REVIEWS.length == 0)
+        return ['No reviews found for this product!', null];
+
+    return [REVIEWS, null];
+}
 
 
 // --------------------------------------------------------Exports---------------------------------------------------------------
 module.exports = {
     get_prod_by_id,
-    get_all_prodiucts
+    get_all_products,
+    get_prods_in_cat_id,
+    get_reviews_of_prod_by_id
 }

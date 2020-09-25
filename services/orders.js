@@ -1,6 +1,7 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var {to} = require('await-to-js');
+
 const models = require('../lib/database/mysql/index');
 const logger = require('../lib/logging/winston_logger');
 const cart_services = require('./shopping_cart');
@@ -18,6 +19,7 @@ async function get_order_by_order_id( order_id)
             }]
         }
     ));
+    
     let error;
 
     if(err)
@@ -145,7 +147,6 @@ async function post_order_buy_from_cart(cust_id)
 
     if(error)
         return [error, null];
-
 
 
     [err, serv] = await to(cart_services.total_amount( cust_id ));

@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
-const models = require('../lib/database/mysql/index');
 const { to } = require('await-to-js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const utils = require('../data/utils');
 const joi = require('joi');
+const router = express.Router();
 
+const models = require('../lib/database/mysql/index');
+const utils = require('../data/utils');
 
 // Get all customers
 router.get('/', utils.verifyToken, async (req, res) => {

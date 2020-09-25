@@ -1,7 +1,7 @@
 const express = require('express');
-const router = express.Router();
 const { to } = require('await-to-js');
 const Sequelize = require('sequelize');
+const router = express.Router();
 
 
 const models = require('../lib/database/mysql/index');
@@ -80,19 +80,6 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
     return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null});
     
 });
-
-/* router.get('/try', async (req, res) => {
-
-    //let [err, data] = await to(cache.setValue("Aditi", "Gupta"));
-    let [err, value] = await to(cache.getValue("Aditi"));
-    if(err)
-        res.json({ data: null, error: "Eror in getting value in Redis !!"});
-
-    return res.json({
-        data: value,
-        error: null
-    });
-}); */
 
 
 // Get orders of current customer
