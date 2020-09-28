@@ -1,58 +1,51 @@
 const express = require('express');
-const router = express.Router();
-const models = require('../lib/database/mysql/index');
 const { to } = require('await-to-js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const utils = require('../data/utils');
 const joi = require('joi');
+const router = express.Router();
+
+const models = require('../lib/database/mysql/index');
+const utils = require('../data/utils');
+const joi_validtn = require('../data/joi');
+const order_services = require('../services/orders');
+const customer_services = require('../services/customers');
 
 
-// Get all customers
+
+// Get customer details
 router.get('/', utils.verifyToken, async (req, res) => {
   
     let {id} = res.cur_customer;
-    let [err, CUSTOMERS] = await to(models.customerModel.findAll({
-        where: { id: id}
-    }));
-
+    let [err, serv] = await to(customer_services.get_cust_details(id));
     if(err)
         return res.json({ data: null, error: err});
+    
+    let [error, CUSTOMERS] = serv;
+    if(error)
+        return res.json({ data: null, error});
 
     return res.send({ data: CUSTOMERS, error: null});
 });
+
+
+
 
 
 // Signup a customer
 router.post('/', async(req, res) => {
 
     // Validation
-    let validated = await utils.vldt_signup.validate(req.body);
+    let validated = await joi_validtn.vldt_signup.validate(req.body);
 
     if(validated && validated.error)
-    {
         return res.json({ data: null, error: validated["error"].message });
-    }
 
-    let customer_payload = req.body;
-
-    // Encrypting password
-    const [tmp, encrypted_pass] = await to( utils.passwordHash( customer_payload.password));
-    console.log(tmp);
-    if(tmp)
-        return res.json({ data: null, error: "Error in encrypting password", tmp});
-
-    // find customer or create new one
-    const [ customer, created] = await models.customerModel.findOrCreate({
-        where: { email: customer_payload.email },
-        defaults: {
-            name: customer_payload.name,
-            email: customer_payload.email,
-            encrypted_pass: encrypted_pass,
-            login_status: false
-        }
-    });
   
+    let [err, created] = await to(customer_services.signup(req.body));
+    if(err)
+        return res.json({ data: null, error: err});
+
     if(!created)
         return res.json({ data: null, error: "A customer with this email alreasy exists !"});
   
@@ -62,111 +55,56 @@ router.post('/', async(req, res) => {
 
 
 
-/* 
 
 // Update a customer
 router.put('/', utils.verifyToken, async(req, res) => {
 
     // Validation 
-    let validated = await utils.vldt_login.validate(req.body);
+    let validated = await joi_validtn.vldt_update_info.validate(req.body);
 
     if(validated && validated.error)
-    {
         return res.json({ data: null, error: validated["error"].message });
-    }
 
+    
     let customer = res.cur_customer;
-    let { name, phone_no, credit_card_no, addr1, addr2, city, region, postal_code, country} = req.body;
-
-    let [tmp, count] = await to(models.customerModel.update(
-        { 
-            name,
-            phone_no, 
-            credit_card_no,
-            addr1,
-            addr2,
-            city,
-            region,
-            postal_code,
-            country
-        }, 
-        {
-            where: {
-                id: customer.id
-            }
-        }
-    ));
+    let [err, cnt] = await to(customer_services.update_cust(req.body, customer.id));
+    if(err)
+        return res.json({ data: null, error: err});
+    
+    return res.json({ data: "Info updated successfully!!"});
 
 });
- */
 
 
 
 
-// Login a customer
 router.post('/login', async(req, res) => {
 
     // Validation 
-    let validated = await utils.vldt_login.validate(req.body);
+    let validated = await joi_validtn.vldt_login.validate(req.body);
 
     if(validated && validated.error)
-    {
         return res.json({ data: null, error: validated["error"].message });
-    }
 
-    // Checking if customer isn't signed up or already logged in
-    let payload_customer = req.body;
 
-    let [err, CUSTOMER ] = await to(models.customerModel.findOne({ 
-        where: {
-          email: payload_customer.email
-        }
-    }));
-    
+    let [err, serv] = await to(customer_services.login(req.body));
     if(err)
-        return res.json({data: null, error: "Some error occured in fetching data!"});
-    
-    if( CUSTOMER == null )
-        return res.json({ data: null, error: "No customer found with this email!"});
+        return res.json({ data: null, error: err});
 
-    let customer = CUSTOMER.dataValues;
-    //console.log(customer);
 
-    if( customer.login_status == true)
-        return res.json({ data: null, error: "User is already logged in!"});
+    let [error, newCustomer] = serv;
+    if(error)
+        return res.json({ data: null, error});
 
-    
-    const newCustomer = {
-        id: customer.id,
-        name: customer.name,
-        email: customer.email
-    } 
-    
-
-    // Checking password
-    let [error, isValid] = await to( bcrypt.compare( payload_customer.password, customer.encrypted_pass) )
-
-    if(error){
-        return res.json({ data: null, error: "Some error occured in comparing password"});
-    }
-
-    if(!isValid){
-        return res.json({ data: null, error: "Incorrect Password !"});
-    }
 
     // Creating customer's token
-
     jwt.sign( { newCustomer }, 'secretkey', async (error, token) => {
 
         if(error)
             return res.json({ data: null, "error": "Error in assigning token" });
 
-
-        // Updating login_status to true
         await models.customerModel.update({ login_status: true }, {
-            where: {
-              email: newCustomer.email
-            }
+            where: { email: newCustomer.email }
         });
 
         return res.json({
@@ -178,18 +116,12 @@ router.post('/login', async(req, res) => {
 });
 
 
-// Logout
+
 router.put('/logout', utils.verifyToken, async (req, res) => {
 
-    let {email} = res.cur_customer;
-    //let {email} = req.body;
-
-    // Updating login_status to false
-    await models.customerModel.update({ login_status: false }, {
-        where: {
-          email: email
-        }
-    });
+    let [err, cnt] = await to(customer_services.update_phone_no( res.cur_customer.email));
+    if(err)
+        return res.json({ data: null, error: err});
 
     return res.json({ data: "Logged out succesfully !!", error: null});
  
@@ -197,93 +129,62 @@ router.put('/logout', utils.verifyToken, async (req, res) => {
 
 
 
-// Update a customer's phone no
+
 router.put( '/phoneNo', utils.verifyToken, async(req, res) => {
 
     // Validation 
-    let validated = await utils.vldt_c_phone_no.validate(req.body);
+    let validated = await joi_validtn.vldt_c_phone_no.validate(req.body);
 
     if(validated && validated.error)
-    {
         return res.json({ data: null, error: "Invalid phone no!! Phone no must be of 10 digits"});
-    }
 
 
-    let customer = res.cur_customer;
-    let ph_no = req.body.phone_no;
-    ph_no = parseInt(ph_no);
-
-    let [tmp, count] = await to(models.customerModel.update({ phone_no: ph_no }, {
-        where: {
-            id: customer.id
-        }
-    }));
-
+    let [err, cnt] = await to(customer_services.update_phone_no( req.body.phone_no, res.cur_customer.id));
+    if(err)
+        return res.json({ data: null, error: err});
+    
     return res.json({ data: "Phone no updated successfully!!"});
 
 });
 
 
-// Update a customer's phone no
+
+
 router.put( '/creditCard', utils.verifyToken, async(req, res) => {
 
     // Validation 
-    let validated = await utils.vldt_c_credit_no.validate(req.body);
+    let validated = await joi_validtn.vldt_c_credit_no.validate(req.body);
 
     if(validated && validated.error)
-    {
         return res.json({ data: null, error: validated["error"].message });
-    }
 
-    let customer = res.cur_customer;
+
     let cc_no = req.body.credit_card_no;
-    cc_no = parseInt(cc_no);
-
-    let [tmp, count] = await to(models.customerModel.update({ credit_card_no: cc_no }, {
-        where: {
-            id: customer.id
-        }
-    }));
+    let [err, cnt] = await to(customer_services.update_credit_card_no(cc_no, res.cur_customer.id));
+    if(err)
+        return res.json({ data: null, error: err});
 
     return res.json({ data: "Credit card no updated successfully!!"});
 
 });
 
 
-// Update a customer's phone no
+
+
 router.put( '/address', utils.verifyToken, async(req, res) => {
 
     // Validation 
-    let validated = await utils.vldt_c_address.validate(req.body);
+    let validated = await joi_validtn.vldt_c_address.validate(req.body);
 
     if(validated && validated.error)
-    {
         return res.json({ data: null, error: validated["error"].message });
-    }
 
 
-    let customer = res.cur_customer;
-    let { addr1, addr2, city, region, postal_code, country} = req.body;
-    postal_code = parseInt(postal_code);
+    let [err, cnt] = await to(customer_services.update_addr(req.body, res.cur_customer.id));
+    if(err)
+        return res.json({ data: null, error: err});
 
-    let [tmp, count] = await to(models.customerModel.update(
-        { 
-            addr1,
-            addr2,
-            city,
-            region,
-            postal_code,
-            country
-
-        }, 
-        {
-            where: {
-                id: customer.id
-            }
-        }
-    ));
-
-    return res.json({ data: "Address updated successfully!!"});
+    return res.json({ data: "Address updated successfully!!", error: null});
 
 });
 

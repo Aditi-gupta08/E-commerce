@@ -1,70 +1,92 @@
 const express = require('express');
-const router = express.Router();
-const models = require('../lib/database/mysql/index');
 const { to } = require('await-to-js');
-const utils = require('../data/utils');
 const Sequelize = require('sequelize');
+const router = express.Router();
+
+
+const models = require('../lib/database/mysql/index');
+const utils = require('../data/utils');
+const order_services = require('../services/orders');
+const joi_validtn = require('../data/joi');
+
+
+// Buy from cart
+router.post('/from_cart', utils.verifyToken, async(req, res) => {
+    let cust = res.cur_customer;
+    let cust_id = cust.id;
+    
+    let [err, serv] = await to( order_services.req_to_put_order( cust_id) );
+
+    if(err)
+        res.json({ data: null, error: err});
+
+    if(serv[0])
+        res.json({ data: null, error });
+
+
+
+    [err, serv] = await to( order_services.post_order_buy_from_cart(cust_id) );
+
+    if(err)
+        res.json({ data: null, error: err });
+
+    if(serv[0])
+        res.json({ data: null, error: serv[0]});
+
+    return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null});
+
+});
+
 
 
 // POST order
-router.post('/', utils.verifyToken, async(req, res) => {
+router.post('/from_products', utils.verifyToken, async(req, res) => {
     
     let ordr = req.body;
+    let prod_id = ordr.product_id;
     let cust = res.cur_customer;
+    let cust_id = cust.id;
+    
+
+    let [err, serv] = await to( order_services.req_to_put_order( cust_id) );
+
+    if( err )
+        res.json({ data: null, error: err });
+
+    if( serv[0])
+        res.json({ data: null, error: serv[0]});
+
 
     // Validation
-    let validated = await utils.vldt_add_order.validate(ordr);
+    let validated = await joi_validtn.vldt_add_order_from_prod.validate(ordr);
 
     if(validated && validated.error)
     {
         return res.json({ data: null, error: validated["error"].message });
-    }
+    } 
 
-    let [err, PRODUCT] = await to(models.productModel.findOne(
-        {   attributes: {exclude: ['createdAt', 'updatedAt']},
-            where: {
-            id: ordr.product_id
-            }
-        }
-    ));
+
+
+    [err, serv] = await to( order_services.post_order_buy_from_products(cust_id, ordr, prod_id) );
 
     if(err)
-        return res.json({data: null, error: err});
+        res.json({ data: null, error: err});
 
-    if( PRODUCT == null)
-        return res.json({ data: null, error: "No product found with this id !"});
+    if(serv[0])
+        res.json({ data: null, error: serv[1]});
 
-    let order = {
-        'customer_id': cust.id,
-        'product_id': ordr.product_id,
-        'product_name': PRODUCT.name,
-        'quantity': ordr.quantity,
-        'unit_cost': PRODUCT.discounted_price,
-        'subtotal': (ordr.quantity)*(PRODUCT.discounted_price)
-    }
+    return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null});
     
-
-    // find course or create new one
-    const newOrder = models.orderModel.build( order );
-
-    await newOrder.save();
-
-    return res.json({ data: "Order done successfully !", error: null});
 });
+
 
 
 // Get orders of current customer
 router.get('/inCustomer', utils.verifyToken, async(req, res) => {
 
-    let cust = res.cur_customer;
-
-    let [err, ORDERS] = await to(models.orderModel.findAll(
-        {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id']},
-            where: {
-            customer_id: cust.id
-            }
-        }
-    ));
+    let cust_id = res.cur_customer.id;
+    
+    let [err, ORDERS] = await to( order_services.get_order_by_cust_id( cust_id) );
 
     if(err)
         return res.json({data: null, error: err});
@@ -80,26 +102,14 @@ router.get('/inCustomer', utils.verifyToken, async(req, res) => {
 
 // Get order by id
 router.get('/:order_id', async(req, res) => {
-    let ordr_id = req.params.order_id;
+    let order_id = req.params.order_id;
 
-    let [err, ORDER] = await to(models.orderModel.findOne(
-        {   attributes: {exclude: ['createdAt', 'updatedAt']},
-            where: {
-            id: ordr_id
-            }
-        }
-    ));
-
-
-
+    let [err, serv] = await to( order_services.get_order_by_order_id(order_id) );
 
     if(err)
         return res.json({data: null, error: err});
-
-    if( ORDER == null)
-        return res.json({ data: null, error: "No order found with this id !"});
     
-    return res.send({ data: ORDER, error: null});
+    return res.json({ data: serv[1], error: serv[0]});
 
 });
 
