@@ -21,8 +21,8 @@ async function get_prod_from_cart( cust_id ) {
     if(err)
         error = err;
     else if(PRODUCTS.length == 0)
-        throw new Error("emptyy !!");
-        //error = "Cart is empty !!";
+        //throw new Error("emptyy !!");
+        error = "Cart is empty !!";
 
     return [error, PRODUCTS];
 }

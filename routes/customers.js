@@ -10,14 +10,13 @@ const utils = require('../data/utils');
 const joi_validtn = require('../data/joi');
 const order_services = require('../services/orders');
 const customer_services = require('../services/customers');
-
+const logger = require('../lib/logging/winston_logger');
 
 
 // Get customer details
 router.get('/', utils.verifyToken, async (req, res) => {
   
-    let {id} = res.cur_customer;
-    let [err, serv] = await to(customer_services.get_cust_details(id));
+    let [err, serv] = await to(customer_services.get_cust_details(res.cur_customer.id));
     if(err)
         return res.json({ data: null, error: err});
     
@@ -27,8 +26,6 @@ router.get('/', utils.verifyToken, async (req, res) => {
 
     return res.send({ data: CUSTOMERS, error: null});
 });
-
-
 
 
 
@@ -91,14 +88,13 @@ router.post('/login', async(req, res) => {
     if(err)
         return res.json({ data: null, error: err});
 
-
     let [error, newCustomer] = serv;
     if(error)
         return res.json({ data: null, error});
 
-
+    
     // Creating customer's token
-    jwt.sign( { newCustomer }, 'secretkey', async (error, token) => {
+    jwt.sign( { newCustomer }, process.env.secret_key, async (error, token) => {
 
         if(error)
             return res.json({ data: null, "error": "Error in assigning token" });
@@ -107,10 +103,8 @@ router.post('/login', async(req, res) => {
             where: { email: newCustomer.email }
         });
 
-        return res.json({
-            "accessToken" : token,
-            "error": null
-        });
+        return res.json({ access_token: token, error: null})
+ 
     }); 
 
 });
@@ -188,9 +182,5 @@ router.put( '/address', utils.verifyToken, async(req, res) => {
 
 });
 
-
-router.get( '/try', utils.verifyToken, (req, res) => {
-    return res.send("tryy");
-})
 
 module.exports = router;
