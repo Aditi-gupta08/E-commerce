@@ -9,13 +9,10 @@ const productRouter = require('./routes/products');
 const orderRouter = require('./routes/orders');
 const shoppingCartRouter = require('./routes/shopping_cart');
 
-const alert = require('./lib/alerting/sentry');
+const alert = require('./lib/alert/sentry');
 const logger = require('./lib/logging/winston_logger');
 const cache = require('./lib/cache/redis');
-
-
 var app = express();
-
 
 
 function main() {

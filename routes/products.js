@@ -7,6 +7,8 @@ const utils = require('../data/utils');
 const product_services = require('../services/products');
 const cache = require('../lib/cache/redis');
 const middlwr_caching = require('../data/middlewares/caching_functions');
+const joi_validtn = require('../data/joi');
+
 
 
 // Get all products using caching
@@ -31,6 +33,7 @@ router.get('/all', middlwr_caching.caching_all_prod ,async(req, res) => {
 });
 
 
+
 // Get all products
 router.get('/', async(req, res) => {
 
@@ -48,6 +51,7 @@ router.get('/', async(req, res) => {
 
 
 
+
 // Add product    (only admins can add)
 router.post('/:category_id', utils.verifyToken, async(req, res) => {
     
@@ -61,7 +65,7 @@ router.post('/:category_id', utils.verifyToken, async(req, res) => {
     }
 
     // Validation
-    let validated = await utils.vldt_add_products.validate(prod);
+    let validated = await joi_validtn.vldt_add_products.validate(prod);
 
     if(validated && validated.error)
     {

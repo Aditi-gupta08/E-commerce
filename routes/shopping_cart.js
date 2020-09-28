@@ -9,6 +9,7 @@ const utils = require('../data/utils');
 const cart_services = require('../services/shopping_cart');
 const product_services = require('../services/products');
 const logger = require('../lib/logging/winston_logger');
+const joi_validtn = require('../data/joi');
 
 
 
@@ -17,6 +18,9 @@ router.get('/', utils.verifyToken, async(req, res) => {
     let cust = res.cur_customer;
 
     let [error, serv] = await to(cart_services.get_prod_from_cart( cust.id ));
+
+    if(error)
+        console.log(error);
 
     if(error)
         res.json({ data: null, error: error});
@@ -54,7 +58,7 @@ router.post('/add', utils.verifyToken, async(req, res) => {
     let prod_id = cart_product.product_id;
 
     // Validation
-    let validated = await utils.vldt_add_to_cart.validate(cart_product);
+    let validated = await joi_validtn.vldt_add_to_cart.validate(cart_product);
 
     if(validated && validated.error)
     {
@@ -132,7 +136,7 @@ router.put('/update/:product_id', utils.verifyToken, async(req, res) => {
  
 
     // Validation
-    let validated = await utils.vldt_update_cart.validate( req.body );
+    let validated = await joi_validtn.vldt_update_cart.validate( req.body );
 
     if(validated && validated.error)
     {

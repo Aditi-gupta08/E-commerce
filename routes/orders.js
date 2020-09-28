@@ -6,10 +6,8 @@ const router = express.Router();
 
 const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
-const cart_services = require('../services/shopping_cart');
-const product_services = require('../services/products');
 const order_services = require('../services/orders');
-const cache = require('../lib/cache/redis');
+const joi_validtn = require('../data/joi');
 
 
 // Buy from cart
@@ -60,7 +58,7 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
 
 
     // Validation
-    let validated = await utils.vldt_add_order_from_prod.validate(ordr);
+    let validated = await joi_validtn.vldt_add_order_from_prod.validate(ordr);
 
     if(validated && validated.error)
     {
@@ -80,6 +78,7 @@ router.post('/from_products', utils.verifyToken, async(req, res) => {
     return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null});
     
 });
+
 
 
 // Get orders of current customer

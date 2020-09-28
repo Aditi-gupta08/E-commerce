@@ -1,12 +1,12 @@
 const express = require('express');
 const { to } = require('await-to-js');
-
 const router = express.Router();
 
 const models = require('../lib/database/mysql/index');
 const utils = require('../data/utils');
 const cache = require('../lib/cache/redis');
 const middlwr_caching = require('../data/middlewares/caching_functions');
+const joi_validtn = require('../data/joi');
 
 
 // Get all categories
@@ -88,7 +88,7 @@ router.post('/', utils.verifyToken, async(req, res) => {
     }
 
     // Validation
-    let validated = await utils.vldt_add_category.validate(category);
+    let validated = await joi_validtn.vldt_add_category.validate(category);
 
     if(validated && validated.error)
     {
