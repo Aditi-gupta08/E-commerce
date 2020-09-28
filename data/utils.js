@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
   
         req.token = bearerToken;
 
-        jwt.verify( req.token, 'secretkey', async (error, authData) => {
+        jwt.verify( req.token, process.env.secret_key, async (error, authData) => {
             if(error) {
                 return res.status(400).json({ "error": "Not verified successfully"}); 
             } 
@@ -62,12 +62,10 @@ const passwordHash = async (password) => {
     return encrypted_pass;
 };
 
-const admin_id = 1;
 
 
 // --------------------------------------------------------Exports---------------------------------------------------------------
 module.exports = {
-    admin_id,
     verifyToken,
     passwordHash
 }

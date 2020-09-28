@@ -59,7 +59,7 @@ router.post('/:category_id', utils.verifyToken, async(req, res) => {
     let cat_id = req.params.category_id;
     let cust = res.cur_customer;
 
-    if( cust.id != utils.admin_id)
+    if( cust.id != process.env.admin_id)
     {
         return res.json({ data: null, error: "Only admins can add a category !!"});
     }
@@ -148,8 +148,6 @@ router.get('/inCategory/:category_id', async(req, res) => {
     return res.json({ data:PRODUCTS, error: null});
 });
 
-/********** must add invalid cat_id err  **********/
-
 
 // Get all reviews of a product
 router.get('/:product_id/reviews', async(req, res) => {
@@ -168,9 +166,6 @@ router.get('/:product_id/reviews', async(req, res) => {
 });
 
 
-/********** must add invalid prod_id err  **********/
-
-
 // Add reviews for a product
 router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     
@@ -178,7 +173,7 @@ router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     let rev = req.body;
     let prod_id = req.params.product_id;
 
-    /* let [err, ORDERS] = await to(models.orderModel.findAll(
+    let [err, ORDERS] = await to(models.orderModel.findAll(
         {   attributes: {exclude: ['createdAt', 'updatedAt', 'customer_id']},
             where: {
             customer_id: cust.id
@@ -193,7 +188,7 @@ router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     ));
 
     if( ORDERS.length == 0)
-        return res.json({ data: null, error: "You are no allowed to give review for this product!! As you haven't bought it yet !"}); */
+        return res.json({ data: null, error: "You are no allowed to give review for this product!! As you haven't bought it yet !"});
 
     // Validation
     let validated = await utils.vldt_add_review.validate(rev);
@@ -204,7 +199,6 @@ router.post('/:product_id/reviews', utils.verifyToken, async(req, res) => {
     }
 
 
-    // find course or create new one
     const newReview = models.reviewModel.build({
       product_id: prod_id,
       rating: rev.rating,
