@@ -24,7 +24,6 @@ router.post('/from_cart', utils.verifyToken, async(req, res) => {
         res.json({ data: null, error });
 
 
-
     [err, serv] = await to( order_services.post_order_buy_from_cart(cust_id) );
 
     if(err)
