@@ -24,7 +24,7 @@ const get_all_products = async (req, res, next) => {
     if(err)
         return res.json({ data: null, error: "Eror in setting value in Redis !!"});
     
-    return res.send({ data: PRODUCTS, error});
+    return res.json({ data: PRODUCTS, error});
 }
 
 
@@ -40,7 +40,7 @@ const get_prod_by_id = async (req, res, next) => {
     if(error)
         return res.json({data: null, error });
     
-    return res.send({ data, error});
+    return res.json({ data, error});
 }
 
 
@@ -93,7 +93,7 @@ const search_prod_by_name = async (req, res, next) => {
     if( PRODUCTS.length == 0 )
         return res.json({ data: null, error: "No product found with this name !"});
 
-    return res.send({ data: PRODUCTS, error: null});
+    return res.json({ data: PRODUCTS, error: null});
 }
 
 
@@ -123,7 +123,7 @@ const get_all_reviews = async (req, res, next) => {
     if(error)
         return res.json({data: null, error });
 
-    return res.send({ data: REVIEWS, error: null});
+    return res.json({ data: REVIEWS, error: null});
 }
 
 

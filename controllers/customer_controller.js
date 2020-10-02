@@ -15,7 +15,7 @@ const get_cust_details = async (req, res, next) => {
     if(error)
         return res.json({ data: null, error});
 
-    return res.send({ data: CUSTOMERS, error: null});
+    return res.json({ data: CUSTOMERS, error: null});
 }
 
 
@@ -145,7 +145,6 @@ const update_address = async (req, res, next) => {
         return res.json({ data: null, error: err});
 
     return res.json({ data: "Address updated successfully!!", error: null});
-
 }
 
 

@@ -15,7 +15,7 @@ const get_all_categories = async (req, res, next) => {
     if(error)
         return res.json({ data: null, error});
 
-    return res.send({ data: CATEGORIES, error: null});
+    return res.json({ data: CATEGORIES, error: null});
 }
 
 
@@ -28,7 +28,7 @@ const get_catg_by_id = async(req, res, next) => {
     if(error)
         return res.json({ data: null, error});
     
-    return res.send({ data: CATEGORY, error: null});
+    return res.json({ data: CATEGORY, error: null});
 }
 
 
