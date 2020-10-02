@@ -51,7 +51,7 @@ async function get_category_of_prod_id( prod_id )
     let [err, Product] = await to(models.productModel.findAll(
         {   
             where: {id: prod_id},
-            include: [{   model: models.categoryModel }]
+            include: [{   model: models.categoryModel}]
         }
     ));
 

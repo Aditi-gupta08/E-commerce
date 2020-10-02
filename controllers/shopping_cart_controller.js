@@ -19,7 +19,7 @@ const get_prod_in_cart = async (req, res, next) => {
     if(serv[0])
         res.json({ data: null, error: serv[0]});
     
-    return res.send({ data: serv[1], error: null});
+    return res.json({ data: serv[1], error: null});
 }
 
 

@@ -80,7 +80,7 @@ const get_all_orders_of_cust = async (req, res, next) => {
     if( ORDERS == [])
         return res.json({ data: null, error: "The customer dont has any order!"});
     
-    return res.send({ data: ORDERS, error: null});
+    return res.json({ data: ORDERS, error: null});
 }
 
 

@@ -24,7 +24,7 @@ const get_all_products = async (req, res, next) => {
     if(err)
         return res.json({ data: null, error: "Eror in setting value in Redis !!"});
     
-    return res.send({ data: PRODUCTS, error});
+    return res.json({ data: PRODUCTS, error});
 }
 
 
@@ -40,7 +40,7 @@ const get_prod_by_id = async (req, res, next) => {
     if(error)
         return res.json({data: null, error });
     
-    return res.send({ data, error});
+    return res.json({ data, error});
 }
 
 
@@ -67,7 +67,10 @@ const add_product = async (req, res, next) => {
     // find course or create new one
     const newProduct = models.productModel.build(prod);
 
-    await newProduct.save();
+    let [err, data] = await to( newProduct.save());
+
+    if(err)
+        return res.json({ data: null, error: err });
 
     return res.json({ data: "Product added successfully !", error: null});
 }
@@ -93,7 +96,7 @@ const search_prod_by_name = async (req, res, next) => {
     if( PRODUCTS.length == 0 )
         return res.json({ data: null, error: "No product found with this name !"});
 
-    return res.send({ data: PRODUCTS, error: null});
+    return res.json({ data: PRODUCTS, error: null});
 }
 
 
@@ -150,7 +153,7 @@ const add_review = async (req, res, next) => {
         return res.json({ data: null, error: "You are no allowed to give review for this product!! As you haven't bought it yet !"});
 
     // Validation
-    let validated = await utils.vldt_add_review.validate(rev);
+    let validated = await joi_validtn.vldt_add_review.validate(rev);
 
     if(validated && validated.error)
     {
