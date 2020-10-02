@@ -1,9 +1,6 @@
-var express = require('express');
-var jwt = require('jsonwebtoken');
 var {to} = require('await-to-js');
 
 const models = require('../lib/database/mysql/index');
-const logger = require('../lib/logging/winston_logger');
 
 
 async function get_all_products()

@@ -1,4 +1,3 @@
-var createError = require('http-errors');
 var express = require('express');
 const {to} = require('await-to-js');
 const models = require('./lib/database/mysql/index');

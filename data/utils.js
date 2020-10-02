@@ -52,6 +52,7 @@ const verifyToken = (req, res, next) => {
     } 
 }
 
+
 const passwordHash = async (password) => {
     const saltRounds = 10;
     const [err, encrypted_pass ] = await to( bcrypt.hash(password, saltRounds));

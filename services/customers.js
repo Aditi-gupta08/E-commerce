@@ -1,5 +1,3 @@
-var express = require('express');
-var jwt = require('jsonwebtoken');
 var {to} = require('await-to-js');
 const bcrypt = require('bcrypt');
 
