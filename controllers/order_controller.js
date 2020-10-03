@@ -11,19 +11,19 @@ const buy_from_cart = async (req, res, next) => {
     let [err, serv] = await to( order_services.req_to_put_order( cust_id) );
 
     if(err)
-        res.json({ data: null, error: err});
+        return res.json({ data: null, error: err});
 
     if(serv[0])
-        res.json({ data: null, error: serv[0]});
+        return res.json({ data: null, error: serv[0]});
 
 
     [err, serv] = await to( order_services.post_order_buy_from_cart(cust_id) );
 
     if(err)
-        res.json({ data: null, error: err });
+        return res.json({ data: null, error: err });
 
     if(serv[0])
-        res.json({ data: null, error: serv[0]});
+        return res.json({ data: null, error: serv[0]});
 
     return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null});
 
