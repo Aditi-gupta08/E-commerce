@@ -40,7 +40,7 @@ const get_prod_by_id = async (req, res, next) => {
     if(error)
         return res.json({data: null, error });
     
-    return res.json({ data, error});
+    return res.json({ data, error: null});
 }
 
 
@@ -116,7 +116,7 @@ const get_prod_in_catg_id = async (req, res, next) => {
 }
 
 
-const get_all_reviews = async (req, res, next) => {
+const get_all_reviews_of_prodId = async (req, res, next) => {
     let prod_id = req.params.product_id;
     let [err, serv] = await to(product_services.get_reviews_of_prod_by_id( prod_id ) );
     if(err)
@@ -126,7 +126,7 @@ const get_all_reviews = async (req, res, next) => {
     if(error)
         return res.json({data: null, error });
 
-    return res.send({ data: REVIEWS, error: null});
+    return res.json({ data: REVIEWS, error: null});
 }
 
 
@@ -183,6 +183,7 @@ module.exports = {
     add_product,
     search_prod_by_name,
     get_prod_in_catg_id,
-    get_all_reviews,
-    add_review
+    get_all_reviews_of_prodId,
+    add_review,
+    product_services
 }

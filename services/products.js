@@ -78,7 +78,7 @@ async function get_reviews_of_prod_by_id (prod_id)
     if( REVIEWS.length == 0)
         return ['No reviews found for this product!', null];
 
-    return [REVIEWS, null];
+    return [null, REVIEWS];
 }
 
 

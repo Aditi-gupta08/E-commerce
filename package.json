@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "env-cmd -f data/variables.env node ./bin/www",
-    "dev": "env-cmd -f data/variables.env nodemon ./bin/www"
+    "dev": "env-cmd -f data/variables.env nodemon ./bin/www",
+    "test": "env-cmd -f data/variables.env ./node_modules/.bin/nyc ./node_modules/.bin/mocha './{,!(node_modules)/**}/*.spec.js'"
   },
   "dependencies": {
     "@sentry/node": "^5.23.0",
@@ -25,14 +26,22 @@
     "my-logger": "^1.0.1",
     "mysql2": "^2.1.0",
     "nodemon": "^2.0.4",
+    "nyc": "^15.1.0",
     "redis": "^3.0.2",
     "sequelize": "^6.3.5",
     "winston": "^3.3.3"
   },
   "main": "app.js",
   "devDependencies": {
+    "@types/chai": "^4.2.13",
+    "@types/mocha": "^8.0.3",
     "@types/redis": "^2.8.27",
-    "@types/sequelize": "github:types/sequelize"
+    "@types/sequelize": "github:types/sequelize",
+    "@types/sinon": "^9.0.8",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.1.3",
+    "sinon": "^9.1.0"
   },
   "author": "",
   "license": "ISC",

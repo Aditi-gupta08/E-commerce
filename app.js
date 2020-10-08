@@ -18,7 +18,7 @@ function main() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
-  /* alert(); */
+  alert();
   models.connectMysql();
   
   // Routes

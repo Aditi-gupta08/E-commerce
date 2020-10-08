@@ -8,11 +8,11 @@ const utils = require('../data/utils');
 
 async function get_cust_details(cust_id)
 {
-    let [err, CUSTOMERS] = await to(models.customerModel.findAll({
+    let [err, CUSTOMER] = await to(models.customerModel.findOne({
         where: { id: cust_id}
     }));
 
-    return [err, CUSTOMERS];
+    return [err, CUSTOMER];
 }
 
 
@@ -66,7 +66,6 @@ async function login(payload_customer)
         email: customer.email
     } 
     
-
     // Checking password
     let [error, isValid] = await to( bcrypt.compare( payload_customer.password, customer.encrypted_pass) )
 

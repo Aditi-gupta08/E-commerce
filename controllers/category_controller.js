@@ -10,6 +10,7 @@ const get_all_categories = async (req, res, next) => {
     let [err, serv] = await to(category_services.get_all_catg());
     if(err)
         return res.json({ data: null, error: err});
+        
     let [error, CATEGORIES] = serv;
 
     if(error)

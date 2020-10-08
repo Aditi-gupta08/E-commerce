@@ -11,11 +11,11 @@ const get_cust_details = async (req, res, next) => {
     if(err)
         return res.json({ data: null, error: err});
     
-    let [error, CUSTOMERS] = serv;
+    let [error, CUSTOMER] = serv;
     if(error)
         return res.json({ data: null, error});
 
-    return res.json({ data: CUSTOMERS, error: null});
+    return res.json({ data: CUSTOMER, error: null});
 }
 
 
@@ -83,7 +83,7 @@ const login = async (req, res, next) => {
             where: { email: newCustomer.email }
         });
 
-        return res.json({ access_token: token, error: null})
+        return res.json({ data: token, error: null})
  
     }); 
 }
