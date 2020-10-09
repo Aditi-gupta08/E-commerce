@@ -7,12 +7,7 @@ const category_services = require('../services/categories');
 
 const get_all_categories = async (req, res, next) => {
 
-    let [err, serv] = await to(category_services.get_all_catg());
-    if(err)
-        return res.json({ data: null, error: err});
-        
-    let [error, CATEGORIES] = serv;
-
+    let [error, CATEGORIES] = await category_services.get_all_catg();
     if(error)
         return res.json({ data: null, error});
 
@@ -21,24 +16,18 @@ const get_all_categories = async (req, res, next) => {
 
 
 const get_catg_by_id = async(req, res, next) => {
-    let [err, serv] = await to(category_services.get_category_by_id(req.params.category_id));
-    if(err)
-        return res.json({ data: null, error: err});
-    
-    let [error,CATEGORY] = serv;
+
+    let [error, CATEGORY] = await category_services.get_category_by_id(req.params.category_id);
     if(error)
         return res.json({ data: null, error});
     
-    return res.json({ data: CATEGORY, error: null});
+    return res.json({ data: CATEGORY, error: null}); 
 }
 
 
 const get_catg_by_prod_id = async(req, res, next) => {
-    let [err, serv] = await to(category_services.get_category_of_prod_id(req.params.product_id));
-    if(err)
-        return res.json({ data: null, error: err});
-    
-    let [error, category] = serv;
+    let [error, category] = await category_services.get_category_of_prod_id(req.params.product_id);
+
     if(error)
         return res.json({ data: null, error});
     

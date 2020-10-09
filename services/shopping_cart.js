@@ -55,7 +55,7 @@ async function remove_product_from_cart( cust_id, prod_id) {
         }
     }));
 
-    return deleted;
+    return [err, deleted];
 }
 
 
@@ -66,7 +66,7 @@ async function emptyCart( cust_id ) {
         }
     }));
 
-    return deleted;
+    return [err, deleted];
 }
 
 

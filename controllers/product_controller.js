@@ -8,19 +8,14 @@ const joi_validtn = require('../data/joi');
 
 
 const get_all_products = async (req, res, next) => {
-    let [err, serv] = await to(product_services.get_all_products());
-
-    if(err)
-        return res.json({data: null, error: err});
-    let [error, PRODUCTS] = serv;
+    let [error, PRODUCTS] = await product_services.get_all_products();
 
     if(error)
         return res.json({data: null, error });
 
     let PROD = JSON.stringify( PRODUCTS, null, 0);
 
-    let data;
-    [err, data] = await to(cache.setValue("All_Products", PROD));
+    let [err, data] = await to(cache.setValue("All_Products", PROD));
     if(err)
         return res.json({ data: null, error: "Eror in setting value in Redis !!"});
     
@@ -31,12 +26,7 @@ const get_all_products = async (req, res, next) => {
 const get_prod_by_id = async (req, res, next) => {
     let prod_id = req.params.product_id;
 
-    let [err, serv] = await to(product_services.get_prod_by_id(prod_id) );
-
-    if(err)
-        return res.json({data: null, error: err});
-    let [error, data] = serv;
-
+    let [error, data] = await product_services.get_prod_by_id(prod_id);
     if(error)
         return res.json({data: null, error });
     
@@ -103,12 +93,7 @@ const search_prod_by_name = async (req, res, next) => {
 const get_prod_in_catg_id = async (req, res, next) => {
     let cat_id = req.params.category_id;
 
-    let [err, serv] = await to(product_services.get_prods_in_cat_id(cat_id) );
-    if(err)
-        return res.json({data: null, error: err});
-
-
-    let [error, PRODUCTS] = serv;
+    let [error, PRODUCTS] = await product_services.get_prods_in_cat_id(cat_id);
     if(error)
         return res.json({data: null, error });
 
@@ -118,11 +103,7 @@ const get_prod_in_catg_id = async (req, res, next) => {
 
 const get_all_reviews_of_prodId = async (req, res, next) => {
     let prod_id = req.params.product_id;
-    let [err, serv] = await to(product_services.get_reviews_of_prod_by_id( prod_id ) );
-    if(err)
-        return res.json({data: null, error: err});
-
-    let [error, REVIEWS] = serv;
+    let [error, REVIEWS] = await product_services.get_reviews_of_prod_by_id( prod_id );
     if(error)
         return res.json({data: null, error });
 

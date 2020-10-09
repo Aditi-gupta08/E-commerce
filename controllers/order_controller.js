@@ -8,24 +8,18 @@ const buy_from_cart = async (req, res, next) => {
     let cust = res.cur_customer;
     let cust_id = cust.id;
     
-    let [err, serv] = await to( order_services.req_to_put_order( cust_id) );
+    let [error, serv] = await order_services.req_to_put_order( cust_id);
 
-    if(err)
-        return res.json({ data: null, error: err});
+    if(error)
+        return res.json({ data: null, error});
 
-    if(serv[0])
-        return res.json({ data: null, error: serv[0]});
+    let ordr_no;
+    [error, ordr_no] = await to( order_services.post_order_buy_from_cart(cust_id) );
 
-
-    [err, serv] = await to( order_services.post_order_buy_from_cart(cust_id) );
-
-    if(err)
+    if(error)
         return res.json({ data: null, error: err });
 
-    if(serv[0])
-        return res.json({ data: null, error: serv[0]});
-
-    return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null});
+    return res.json({ data: `Order done !! Your order id: ${ordr_no}`, error: null});
 
 }
 
@@ -37,14 +31,10 @@ const buy_from_prod = async (req, res, next) => {
     let cust_id = cust.id;
     
 
-    let [err, serv] = await to( order_services.req_to_put_order( cust_id) );
+    let [error, serv] = await order_services.req_to_put_order( cust_id);
 
-    if( err )
-        res.json({ data: null, error: err });
-
-    if( serv[0])
-        res.json({ data: null, error: serv[0]});
-
+    if( error )
+        res.json({ data: null, error });
 
     // Validation
     let validated = await joi_validtn.vldt_add_order_from_prod.validate(ordr);
@@ -55,16 +45,13 @@ const buy_from_prod = async (req, res, next) => {
     } 
 
 
+    let ordr_no;
+    [error, ordr_no] = await to( order_services.post_order_buy_from_products(cust_id, ordr, prod_id) );
 
-    [err, serv] = await to( order_services.post_order_buy_from_products(cust_id, ordr, prod_id) );
+    if(error)
+        res.json({ data: null, error});
 
-    if(err)
-        res.json({ data: null, error: err});
-
-    if(serv[0])
-        res.json({ data: null, error: serv[1]});
-
-    return res.json({ data: `Order done !! Your order id: ${serv[1]}`, error: null}); 
+    return res.json({ data: `Order done !! Your order id: ${ordr_no}`, error: null}); 
 }
 
 
@@ -72,10 +59,9 @@ const buy_from_prod = async (req, res, next) => {
 const get_all_orders_of_cust = async (req, res, next) => {
     let cust_id = res.cur_customer.id;
     
-    let [err, ORDERS] = await to( order_services.get_order_by_cust_id( cust_id) );
-
-    if(err)
-        return res.json({data: null, error: err});
+    let [error, ORDERS] = await order_services.get_order_by_cust_id( cust_id);
+    if(error)
+        return res.json({ data: null, error});
 
     if( ORDERS == [])
         return res.json({ data: null, error: "The customer dont has any order!"});
@@ -87,12 +73,12 @@ const get_all_orders_of_cust = async (req, res, next) => {
 const get_order_by_id = async (req, res, next) => {
     let order_id = req.params.order_id;
 
-    let [err, serv] = await to( order_services.get_order_by_order_id(order_id) );
+    let [err, ORDER] = await order_services.get_order_by_order_id(order_id);
 
     if(err)
         return res.json({data: null, error: err});
     
-    return res.json({ data: serv[1], error: serv[0]});
+    return res.json({ data: ORDER, error: null});
 }
 
 

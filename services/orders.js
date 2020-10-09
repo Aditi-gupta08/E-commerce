@@ -41,7 +41,7 @@ async function get_order_by_cust_id( cust_id )
         }
     ));
 
-    return ORDERS;
+    return [err, ORDERS];
 }
 
 

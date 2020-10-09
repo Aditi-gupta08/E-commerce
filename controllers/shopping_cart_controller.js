@@ -8,33 +8,24 @@ const get_prod_in_cart = async (req, res, next) => {
 
     let cust = res.cur_customer;
 
-    let [error, serv] = await to(cart_services.get_prod_from_cart( cust.id ));
-
-    if(error)
-        console.log(error);
+    let [error, PRODUCTS] = await cart_services.get_prod_from_cart( cust.id );
 
     if(error)
         res.json({ data: null, error: error});
-
-    if(serv[0])
-        res.json({ data: null, error: serv[0]});
     
-    return res.json({ data: serv[1], error: null});
+    return res.json({ data: PRODUCTS, error: null});
 }
 
 
 const total_amt_of_cart = async (req, res, next) => {
 
     let cust = res.cur_customer;
-    let [err, serv] = await to(cart_services.total_amount( cust.id ));
+    let [err, AMT] = await cart_services.total_amount( cust.id );
 
     if(err)
         return res.json({data: null, error: err});
-
-    if(serv[0])
-        return res.json({ data: null, error: serv[0] });
     
-    return res.send({ data: `Total amount: ${serv[1]}`, error: null});
+    return res.send({ data: `Total amount: ${AMT}`, error: null});
 }
 
 
@@ -50,12 +41,9 @@ const add_to_cart = async (req, res, next) => {
         return res.json({ data: null, error: validated["error"].message });
 
 
-    let [err, serv] = await to(cart_services.add_to_cart(cart_product, cust));
+    let [err, serv] = await cart_services.add_to_cart(cart_product, cust);
     if(err)
         return res.json({data: null, error: err});
-
-    if(serv[0])
-        return res.json({ data: null, error: serv[0] });
 
     return res.json({ data: "Added to cart !", error: null}); 
 
@@ -74,14 +62,10 @@ const update_prod_qty_in_cart = async (req, res, next) => {
     let qty = req.body.quantity;
 
 
-    let [err, serv] = await to(cart_services.update_prod_in_cart( prod_id, qty, res.cur_customer));
+    let [err, serv] = await cart_services.update_prod_in_cart( prod_id, qty, res.cur_customer);
     if(err)
         return res.json({data: null, error: err});
 
-    if(serv[0])
-        return res.json({ data: null, error: serv[0] });
-
-    
     return res.json({ data: " Updated product in cart !!", error: null});
 }
 
@@ -90,8 +74,7 @@ const empty_cart = async (req, res, next) => {
     
     let cust = res.cur_customer;
 
-    let [err, isDeleted] = await to(cart_services.emptyCart(cust.id));
-
+    let [err, isDeleted] = await cart_services.emptyCart(cust.id);
     if(err)
         return res.json({data: null, error: err});
 
@@ -107,7 +90,7 @@ const remove_a_prod_from_cart = async (req, res, next) => {
     let cust = res.cur_customer;
     let prod_id = req.params.product_id;
 
-    let [err, isDeleted] = await to(cart_services.remove_product_from_cart(cust.id, prod_id));
+    let [err, isDeleted] = await cart_services.remove_product_from_cart(cust.id, prod_id);
 
     if(err)
         return res.json({data: null, error: err});

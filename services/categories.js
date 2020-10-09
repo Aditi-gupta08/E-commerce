@@ -16,11 +16,10 @@ async function get_all_catg()
     if(CATEGORIES.length === 0)
         return ["No category !!", null];
 
-    
     let data;
     [err, data] = await to(cache.setValue("All_Categories", JSON.stringify( CATEGORIES, null, 0)));
     if(err)
-        return res.json({ data: null, error: "Eror in setting value in Redis !!"});
+        return ["Eror in setting value in Redis !!", null];
 
     return [null, CATEGORIES];
 }

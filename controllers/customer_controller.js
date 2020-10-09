@@ -7,11 +7,7 @@ const customer_services = require('../services/customers');
 
 
 const get_cust_details = async (req, res, next) => {
-    let [err, serv] = await to(customer_services.get_cust_details(res.cur_customer.id));
-    if(err)
-        return res.json({ data: null, error: err});
-    
-    let [error, CUSTOMER] = serv;
+    let [error, CUSTOMER] = await customer_services.get_cust_details(res.cur_customer.id);
     if(error)
         return res.json({ data: null, error});
 
@@ -27,10 +23,7 @@ const signup = async (req, res, next) => {
         return res.json({ data: null, error: validated["error"].message });
 
   
-    let [err, created] = await to(customer_services.signup(req.body));
-    if(err)
-        return res.json({ data: null, error: err});
-
+    let created = await customer_services.signup(req.body);
     if(!created)
         return res.json({ data: null, error: "A customer with this email alreasy exists !"});
   
@@ -48,9 +41,7 @@ const update_cust_details = async (req, res, next) => {
 
     
     let customer = res.cur_customer;
-    let [err, cnt] = await to(customer_services.update_cust(req.body, customer.id));
-    if(err)
-        return res.json({ data: null, error: err});
+    let cnt = await customer_services.update_cust(req.body, customer.id);
     
     return res.json({ data: "Info updated successfully!!"});
 }
@@ -64,11 +55,7 @@ const login = async (req, res, next) => {
         return res.json({ data: null, error: validated["error"].message });
 
 
-    let [err, serv] = await to(customer_services.login(req.body));
-    if(err)
-        return res.json({ data: null, error: err});
-
-    let [error, newCustomer] = serv;
+    let [error, newCustomer] = await customer_services.login(req.body);
     if(error)
         return res.json({ data: null, error});
 
@@ -90,9 +77,7 @@ const login = async (req, res, next) => {
 
 
 const logout = async (req, res, next) => {
-    let [err, cnt] = await to(customer_services.logout( res.cur_customer.email));
-    if(err)
-        return res.json({ data: null, error: err});
+    let cnt = await customer_services.logout( res.cur_customer.email);
 
     return res.json({ data: "Logged out succesfully !!", error: null});
  
@@ -107,10 +92,7 @@ const update_phone_no = async (req, res, next) => {
         return res.json({ data: null, error: "Invalid phone no!! Phone no must be of 10 digits"});
 
 
-    let [err, cnt] = await to(customer_services.update_phone_no( req.body.phone_no, res.cur_customer.id));
-    if(err)
-        return res.json({ data: null, error: err});
-    
+    let cnt = await customer_services.update_phone_no( req.body.phone_no, res.cur_customer.id);
     return res.json({ data: "Phone no updated successfully!!"});
 }
 
@@ -124,10 +106,7 @@ const update_credit_card_no = async (req, res, next) => {
 
 
     let cc_no = req.body.credit_card_no;
-    let [err, cnt] = await to(customer_services.update_credit_card_no(cc_no, res.cur_customer.id));
-    if(err)
-        return res.json({ data: null, error: err});
-
+    let cnt = await customer_services.update_credit_card_no(cc_no, res.cur_customer.id);
     return res.json({ data: "Credit card no updated successfully!!"});
 }
 
@@ -140,9 +119,7 @@ const update_address = async (req, res, next) => {
         return res.json({ data: null, error: validated["error"].message });
 
 
-    let [err, cnt] = await to(customer_services.update_addr(req.body, res.cur_customer.id));
-    if(err)
-        return res.json({ data: null, error: err});
+    let cnt = await customer_services.update_addr(req.body, res.cur_customer.id);
 
     return res.json({ data: "Address updated successfully!!", error: null});
 
