@@ -4,8 +4,9 @@ const server = require('../app');
 
 // Assertion style
 chai.should();
-
 chai.use(chaiHttp);
+
+console.log(3);
 
 describe('Products APIs', () => {
 
@@ -175,7 +176,7 @@ describe('Products APIs', () => {
         });
 
     });
-    
+    console.log(3);
 
 });
 

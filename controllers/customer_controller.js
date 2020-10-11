@@ -22,7 +22,6 @@ const signup = async (req, res, next) => {
     if(validated && validated.error)
         return res.json({ data: null, error: validated["error"].message });
 
-  
     let created = await customer_services.signup(req.body);
     if(!created)
         return res.json({ data: null, error: "A customer with this email alreasy exists !"});

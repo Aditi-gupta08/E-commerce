@@ -11,45 +11,54 @@ const models = require('../lib/database/mysql/index');
 // Verify token 
 const verifyToken = (req, res, next) => {
 
-    const bearerHeader = req.headers['authorization'];
-  
-    if(typeof bearerHeader !== 'undefined'){
-        const bearer = bearerHeader.split(' ');
-        const bearerToken = bearer[1];
-  
-        req.token = bearerToken;
+    /* if( process.env.NODE_ENV == 'test')
+    {
+        console.log("test env");
+        next();
+    }
+    else
+    { */
+        const bearerHeader = req.headers['authorization'];
 
-        jwt.verify( req.token, process.env.secret_key, async (error, authData) => {
-            if(error) {
-                return res.status(400).json({ "error": "Not verified successfully"}); 
-            } 
-            
-            let email = authData.newCustomer.email;
+        if(typeof bearerHeader !== 'undefined'){
+            const bearer = bearerHeader.split(' ');
+            const bearerToken = bearer[1];
+      
+            req.token = bearerToken;
+    
+            jwt.verify( req.token, process.env.secret_key, async (error, authData) => {
+                if(error) {
+                    return res.status(400).json({ "error": "Not verified successfully"}); 
+                } 
                 
-            // Checking if user exist and is logged in or not  
-            let [err, CUSTOMER] = await to(models.customerModel.findOne({ 
-                where: {
-                  email: email
-                }
-            }));
+                let email = authData.newCustomer.email;
+                    
+                // Checking if user exist and is logged in or not  
+                let [err, CUSTOMER] = await to(models.customerModel.findOne({ 
+                    where: {
+                      email: email
+                    }
+                }));
+                
+                if(err)
+                    return res.json({data: null, error: "Sone error occured in fetching data!"});
+                
+                if( CUSTOMER == null)
+                    return res.json({ data: null, error: "No customer found with this id !"});
+    
+                if( CUSTOMER.dataValues.login_status == false)
+                    return res.status(400).json({ "err": "Customer is not logged in !"});
+    
+                res.cur_customer = authData.newCustomer; 
+                next();
+                
+            });
             
-            if(err)
-                return res.json({data: null, error: "Sone error occured in fetching data!"});
-            
-            if( CUSTOMER == null)
-                return res.json({ data: null, error: "No customer found with this id !"});
-
-            if( CUSTOMER.dataValues.login_status == false)
-                return res.status(400).json({ "err": "Customer is not logged in !"});
-
-            res.cur_customer = authData.newCustomer; 
-            next();
-            
-        });
-        
-    } else {
-      res.status(400).json({error: 'Token not found'});
-    } 
+        } else {
+          res.status(400).json({error: 'Token not found'});
+        } 
+    /* } */
+    
 }
 
 

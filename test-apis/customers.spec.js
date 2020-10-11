@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../app');
 const sinon = require('sinon');
+const jwt = require('jsonwebtoken');
 
 const customer_controller = require('../controllers/customer_controller');
 const auth = require('../data/utils');
@@ -10,6 +11,8 @@ const auth = require('../data/utils');
 chai.should();
 
 chai.use(chaiHttp);
+
+console.log(2);
 
 describe('Customers APIs', () => {
 
@@ -70,7 +73,6 @@ describe('Customers APIs', () => {
             });
         });
     });
-
 
 
     describe('GET /customers', () => {
@@ -214,9 +216,10 @@ describe('Customers APIs', () => {
             });
         });
     });
+   
 
 
-    describe('PUT /customers/login', () => {
+    describe('PUT /customers/logout', () => {
 
         it('should logout customer', (done) => {
             chai.request(server)
@@ -235,15 +238,22 @@ describe('Customers APIs', () => {
             });
         });
 
-    });
+    }); 
+    console.log(2);
 
 });
 
+
+
+
+
 /* 
+
 describe('Customers APIs 2', () => {
+
     var verifyTokenStub;
 
-    before(function (done) {
+    beforeEach(function (done) {
         verifyTokenStub = sinon.stub(auth, 'verifyToken').callsFake(
          function(req, res, next) {
 
@@ -253,20 +263,26 @@ describe('Customers APIs 2', () => {
                 "password": "12345"
             }
             next();
-        }); 
+        });  
 
+        console.log(verifyTokenStub);
+
+        done();
     });
+
 
     describe('GET /customers using mock', () => {
 
         it('should get details of cur customer', (done) => {
             chai.request(server)
             .get("/customers")
+            .set('token', 'anything')
             .end( (err, res) => {
+                verifyTokenStub.returns(Promise.resolve(verifyToken));
 
-                console.log("-----------------------------------");
+                console.log("------------------------------------");
                 console.log(res.body);
-                console.log("-----------------------------------");
+                console.log("------------------------------------");
 
                 res.should.have.status(200);
                 (res.body).should.be.a('object');
@@ -277,8 +293,12 @@ describe('Customers APIs 2', () => {
             });
         });
     });
-});
- */
+
+    afterEach('cleanup', t => {
+        verifyTokenStub.restore();
+    })
+}); */
+  
 
     
 

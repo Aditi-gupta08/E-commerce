@@ -1,11 +1,15 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../app');
+const fs = require('fs');
+/* const {readToken} = require('./index.spec'); */
 
 // Assertion style
 chai.should();
 
 chai.use(chaiHttp);
+
+let token = fs.readFileSync('token.txt', 'utf8');
 
 describe('Categories APIs', () => {
 
@@ -120,5 +124,36 @@ describe('Categories APIs', () => {
     });
 
 
+
+    describe('POST /categories', () => {
+
+        new_category = {
+            "name": "ooo",
+            "desc": "kkkk"
+        }
+
+        /* token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuZXdDdXN0b21lciI6eyJpZCI6MTMsIm5hbWUiOiJ0ZXN0IiwiZW1haWwiOiJ0ZXN0MkBnbWFpbC5jb20ifSwiaWF0IjoxNjAyNDEzNTc2fQ.Hb9sxLXlZjMaBRJwyNgJVbtwKews_4sgVfFY_z93dQ0'
+         */
+
+        it('should add category', (done) => {
+            let product_id = 1;
+
+            chai.request(server)
+            .post(`/categories`)
+            .set("Authorization", token)
+            .send(new_category)
+            .end( (err, res) => {
+
+                console.log("pp");
+
+                done();
+            });
+        });
+
+    });
+
+
+
+    console.log(1);
 });
 
