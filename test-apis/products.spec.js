@@ -1,12 +1,13 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../app');
+const fs = require('fs');
 
 // Assertion style
 chai.should();
 chai.use(chaiHttp);
 
-console.log(3);
+let token = fs.readFileSync('token.txt', 'utf8');
 
 describe('Products APIs', () => {
 
@@ -176,7 +177,6 @@ describe('Products APIs', () => {
         });
 
     });
-    console.log(3);
 
 });
 

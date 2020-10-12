@@ -34,22 +34,16 @@ describe('GET /customers/login', () => {
             
             token = "Bearer " + res.body.data;
             console.log(token);
-            fs.writeFile('token.txt', token, (err) => console.error(err))
+            fs.writeFileSync('token.txt', token, (err) => console.error(err))
             done();
         });
     });
 });
 
-function readToken(){
-    var data = fs.readFileSync('token.txt', 'utf8');
-    return data;
-}
-
 
 require('./categories.spec');
-/*
 require('./customers.spec');
-require('./products.spec'); */
+require('./products.spec'); 
 
 
 describe('PUT /customers/logout', () => {

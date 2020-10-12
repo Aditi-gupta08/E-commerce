@@ -3,6 +3,7 @@ const chaiHttp = require('chai-http');
 const server = require('../app');
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 const customer_controller = require('../controllers/customer_controller');
 const auth = require('../data/utils');
@@ -12,11 +13,9 @@ chai.should();
 
 chai.use(chaiHttp);
 
-console.log(2);
+let token = fs.readFileSync('token.txt', 'utf8');
 
 describe('Customers APIs', () => {
-
-    let token;
 
     /* describe('POST /customers', () => {
         const newCustomer = 
@@ -46,9 +45,7 @@ describe('Customers APIs', () => {
             });
         });
 
-    }); */
-
-
+    }); 
 
     describe('GET /customers/login', () => {
         const newCustomer = 
@@ -73,6 +70,8 @@ describe('Customers APIs', () => {
             });
         });
     });
+
+    */
 
 
     describe('GET /customers', () => {
@@ -219,7 +218,7 @@ describe('Customers APIs', () => {
    
 
 
-    describe('PUT /customers/logout', () => {
+ /*    describe('PUT /customers/logout', () => {
 
         it('should logout customer', (done) => {
             chai.request(server)
@@ -238,8 +237,7 @@ describe('Customers APIs', () => {
             });
         });
 
-    }); 
-    console.log(2);
+    });  */
 
 });
 
