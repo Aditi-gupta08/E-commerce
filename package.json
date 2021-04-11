@@ -5,7 +5,7 @@
   "scripts": {
     "start": "env-cmd -f data/variables.env node ./bin/www",
     "dev": "env-cmd -f data/variables.env nodemon ./bin/www",
-    "test": "env-cmd -f data/variables.env mocha test-apis/index.spec.js"
+    "test": "env-cmd -f data/variables.env mocha services/tests"
   },
   "dependencies": {
     "@sentry/node": "^5.23.0",

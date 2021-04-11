@@ -34,7 +34,7 @@ async function get_prod_by_id( prod_id)
 
     if(err)
         error = err;
-    else if( PRODUCT == null)
+    else if( PRODUCT == null )
         error = "No product found with this id !";
 
     return [error, PRODUCT];

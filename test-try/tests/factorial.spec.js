@@ -31,3 +31,5 @@ describe( 'Running test cases for factorial', function() {
 /* env-cmd -f data/variables.env ./node_modules/.bin/nyc ./node_modules/.bin/mocha './{,!(node_modules)/**}/*.spec.js' */
 /* 
 "test": "env-cmd -f data/variables.env mocha test-apis" */
+
+/* env-cmd -f data/variables.env nyc mocha test-apis/index.spec.js */

@@ -13,13 +13,25 @@ const logger = require('./lib/logging/winston_logger');
 const cache = require('./lib/cache/redis');
 var app = express();
 
-
 function main() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
   alert();
   models.connectMysql();
+
+  app.use(function (req, res, next) {
+
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Accept, X-Custom-Header');
+    res.setHeader('Access-Control-Allow-Headers', "Authorization, Accept, Content-Type");
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+  });
   
   // Routes
   app.use('/customers', customerRouter);
@@ -30,6 +42,8 @@ function main() {
   
   cache.connectRedis();
 };
+
+
 
 main();
 

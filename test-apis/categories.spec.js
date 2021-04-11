@@ -131,7 +131,6 @@ describe('Categories APIs', () => {
             "desc": "kkkk"
         }
 
-
         it('should add category', (done) => {
             let product_id = 1;
 

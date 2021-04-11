@@ -15,7 +15,7 @@ router.post('/', customer_controller.signup );
 router.put('/', utils.verifyToken, customer_controller.update_cust_details);
 
 
-router.get('/login', customer_controller.login);
+router.post('/login', customer_controller.login);
 
 
 router.put('/logout', utils.verifyToken, customer_controller.logout);
